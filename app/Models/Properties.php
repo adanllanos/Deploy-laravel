@@ -17,7 +17,6 @@ class Properties extends Model
     protected $fillable = [
         'idProperty',
         'propertyName',
-        'propertyPicture',
         'propertyOperation',
         'propertyType',
         'propertyAddress',
@@ -26,11 +25,22 @@ class Properties extends Model
         'propertyStatus',
         'propertyAmount',
         'propertyAbility',
-        'host_id', 
+        'propertyCity',
+        'host_id',
     ];
 
     public function holidays()
     {
         return $this->hasMany(Holidays::class, 'properties_holidays', 'property_id', 'holiday_id');
+    }
+
+    public function ratings()
+    {
+        return $this->hasMany(Holidays::class, 'properties_ratings', 'property_id', 'rating_id');
+    }
+
+    public function images()
+    {
+        return $this->hasMany(Holidays::class, 'properties_images', 'property_id', 'image_id');
     }
 }

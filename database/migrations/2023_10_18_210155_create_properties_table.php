@@ -8,6 +8,7 @@ class CreatePropertiesTable extends Migration
 {
     /**
      * Run the migrations. 
+     * Run the migrations. 
      *
      * @return void
      */
@@ -16,8 +17,8 @@ class CreatePropertiesTable extends Migration
         Schema::create('properties', function (Blueprint $table) {
             $table->id('idProperty');
 
+
             $table->string('propertyName');
-            $table->string('propertyPicture');
             $table->string('propertyOperation');
             $table->string('propertyType');
             $table->string('propertyAddress');
@@ -26,7 +27,9 @@ class CreatePropertiesTable extends Migration
             $table->string('propertyStatus');
             $table->integer('propertyAmount');
             $table->integer('propertyAbility');
+            $table->string('propertyCity');
             $table->unsignedBigInteger('host_id');
+
             $table->foreign('host_id')->references('idUser')->on('users')->onDelete('cascade');
 
             $table->timestamps();

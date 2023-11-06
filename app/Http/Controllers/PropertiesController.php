@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Holidays;
+use App\Models\Images;
 use App\Models\Properties;
+use App\Models\User;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -15,16 +17,16 @@ class PropertiesController extends Controller
     public function createdProperties(Request $request)
     {
         $validator = Validator::make($request->all(), [  //valida los maximos y
-            'propertyName' => 'required|string|min:1|max:100',
-            'propertyPicture' => 'required|string|min:1|max:100',
+            'propertyName' => 'required|string|min:1|max:50',
             'propertyOperation' => 'required|string|min:1|max:100',
             'propertyType' => 'required|string|min:1|max:100',
             'propertyAddress' => 'required|string|min:1|max:100',
-            'propertyDescription' => 'required|string|min:1|max:500',
+            'propertyDescription' => 'required|string|min:1|max:200',
             'propertyServices' => 'required|string|min:1|max:100',
             'propertyStatus' => 'required|string|min:1|max:100',
             'propertyAmount' => 'required|integer|min:0',
-            'propertyAbility' => 'required|integer|min:0', 
+            'propertyAbility' => 'required|integer|min:0',
+            'propertyCity' => 'required',
             'host_id' => 'required|integer|min:0'
         ]);
 
@@ -34,14 +36,14 @@ class PropertiesController extends Controller
 
         $property = new properties([
             'propertyName' => $request->propertyName,
-            'propertyPicture' => $request->propertyPicture,
             'propertyOperation' => $request->propertyOperation,
             'propertyType' => $request->propertyType,
             'propertyAddress' => $request->propertyAddress,
             'propertyDescription' => $request->propertyDescription,
             'propertyServices' => $request->propertyServices,
             'propertyStatus' => $request->propertyStatus,
-            'propertyAmount' => $request->propertyAmount, 
+            'propertyAmount' => $request->propertyAmount,
+            'propertyCity' => $request->propertyCity,
             'propertyAbility' => $request->propertyAbility,
 
         ]);
@@ -50,7 +52,7 @@ class PropertiesController extends Controller
         $property->save();
 
 
-        $propertyId = $property->idProperty; 
+        $propertyId = $property->idProperty;
 
         $holidays = $request->input('holidays');
 
@@ -64,6 +66,7 @@ class PropertiesController extends Controller
             $holiday = new Holidays([
                 'startDate' => $holidayData['startDate'],
                 'endDate' => $holidayData['endDate'],
+                'status' => $holidayData['status'],
                 'amount' => $holidayData['amount'],
             ]);
             if (!empty($propertyId)) {
@@ -76,23 +79,50 @@ class PropertiesController extends Controller
             }
             $holiday->save();
         }
+        $images =  $request->input('images');
+
+        if (!is_array($images)) {
+            return response()->json([
+                'message' => 'El campo images debe ser un array válido.',
+            ], 400);
+        }
+
+        foreach ($images as $image) {
+            $image_property = new Images([
+                'imageLink' => $image['imageLink'],
+                'imageDescription' => $image['imageDescription'],
+            ]);
+            if (!empty($propertyId)) {
+                $image_property->property_id = $propertyId;
+                $image_property->save();
+            } else {
+                return response()->json([
+                    'message' => 'El ID de la propiedad no existe',
+                    'propertyId' => $propertyId,
+                ], 400); // Usar un código de respuesta 400 para errores
+            }
+            $image_property->save();
+        }
+
 
         return response()->json([
             'message' => 'successful property registration.',
             'properties' => $property,
             'holidays' => $holidays,
+            'Images_Property' => $images,
         ], 201);
     }
 
     public function propertiesById(Request $request)
+    public function propertiesById(Request $request)
     {
         $properties = DB::table('properties')
-        ->leftJoin('users', 'users.idUser', '=', 'properties.host_id')
-        ->where('idProperty', '=', $request->idProperty)
-        ->where(function ($query) {
-            $query->whereNull('properties.host_id')
-                ->orWhereNotNull('properties.host_id');
-        })
+            ->leftJoin('users', 'users.idUser', '=', 'properties.host_id')
+            ->where('idProperty', '=', $request->idProperty)
+            ->where(function ($query) {
+                $query->whereNull('properties.host_id')
+                    ->orWhereNotNull('properties.host_id');
+            })
             ->select(
 
                 'users.idUser',
@@ -103,7 +133,6 @@ class PropertiesController extends Controller
 
                 'properties.idProperty',
                 'properties.propertyName',
-                'properties.propertyPicture',
                 'properties.propertyOperation',
                 'properties.propertyType',
                 'properties.propertyAddress',
@@ -112,19 +141,22 @@ class PropertiesController extends Controller
                 'properties.propertyStatus',
                 'properties.propertyAmount',
                 'properties.propertyAbility',
+                'properties.propertyCity',
                 'properties.host_id',
             )
             ->get();
 
         return $properties;
+        return $properties;
     }
 
+    public function updateProperties(Request $request, $id)
     public function updateProperties(Request $request, $id)
     {
         $properties = properties::find($id);
 
+
         $properties->propertyName = $request->propertyName;
-        $properties->propertyPicture = $request->propertyPicture;
         $properties->propertyOperation = $request->propertyOperation;
         $properties->propertyType = $request->propertyType;
         $properties->propertyAddress = $request->propertyAddress;
@@ -133,11 +165,13 @@ class PropertiesController extends Controller
         $properties->propertyStatus = $request->propertyStatus;
         $properties->propertyAmount = $request->propertyAmount;
         $properties->propertyAbility = $request->propertyAbility;
+        $properties->propertyCity = $request->propertyCity;
 
         $properties->save();
         return $properties;
     }
 
+    public function deleteProperties(Request $request)
     public function deleteProperties(Request $request)
     {
         $deleted = properties::destroy($request->idProperty);
