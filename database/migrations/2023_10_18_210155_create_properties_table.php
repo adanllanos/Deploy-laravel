@@ -8,6 +8,7 @@ class CreatePropertiesTable extends Migration
 {
     /**
      * Run the migrations. 
+     * Run the migrations. 
      *
      * @return void
      */
@@ -15,6 +16,7 @@ class CreatePropertiesTable extends Migration
     {
         Schema::create('properties', function (Blueprint $table) {
             $table->id('idProperty');
+
 
             $table->string('propertyName');
             $table->string('propertyOperation');
@@ -41,6 +43,6 @@ class CreatePropertiesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('properties');
+        Schema::dropIfExists('properties_holidays');
     }
 }
