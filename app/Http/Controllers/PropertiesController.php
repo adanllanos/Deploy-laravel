@@ -6,7 +6,6 @@ use App\Models\Holidays;
 use App\Models\Images;
 use App\Models\Properties;
 use App\Models\User;
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -114,7 +113,6 @@ class PropertiesController extends Controller
     }
 
     public function propertiesById(Request $request)
-    public function propertiesById(Request $request)
     {
         $properties = DB::table('properties')
             ->leftJoin('users', 'users.idUser', '=', 'properties.host_id')
@@ -147,14 +145,11 @@ class PropertiesController extends Controller
             ->get();
 
         return $properties;
-        return $properties;
     }
 
     public function updateProperties(Request $request, $id)
-    public function updateProperties(Request $request, $id)
     {
         $properties = properties::find($id);
-
 
         $properties->propertyName = $request->propertyName;
         $properties->propertyOperation = $request->propertyOperation;
@@ -171,7 +166,6 @@ class PropertiesController extends Controller
         return $properties;
     }
 
-    public function deleteProperties(Request $request)
     public function deleteProperties(Request $request)
     {
         $deleted = properties::destroy($request->idProperty);

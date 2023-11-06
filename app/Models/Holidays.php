@@ -16,7 +16,7 @@ class Holidays extends Model
         'startDate',
         'endDate',
         'amount',
-        'status'
+        'status' 
     ];
 
     public function properties()
