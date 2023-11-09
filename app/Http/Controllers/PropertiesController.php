@@ -15,7 +15,7 @@ class PropertiesController extends Controller
 {
     public function createdProperties(Request $request)
     {
-        $validator = Validator::make($request->all(), [  //valida los maximos y
+        $validator = Validator::make($request->all(), [
             'propertyName' => 'required|string|min:1|max:50',
             'propertyOperation' => 'required|string|min:1|max:100',
             'propertyType' => 'required|string|min:1|max:100',
