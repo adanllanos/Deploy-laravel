@@ -121,7 +121,7 @@ class PropertiesController extends Controller
         JOIN (SELECT * FROM images GROUP BY property_id) as images ON properties.idProperty = images.property_id */
         DB::statement("SET SQL_MODE=''");
 
-        $properties = Properties::select('idProperty', 'propertyName', 'propertyAmount', 'propertyAbility', 'images.imageLink', 'images.property_id', 'propertydescription')
+        $properties = Properties::select('idProperty', 'propertyName', 'propertyAmount', 'propertyAbility', 'images.imageLink', 'images.property_id', 'propertyDescription', 'propertyCity', 'propertyStatus')
             ->join(DB::raw('(SELECT * FROM images GROUP BY property_id) as images'), function ($join) {
                 $join->on('properties.idProperty', '=', 'images.property_id');
             })
