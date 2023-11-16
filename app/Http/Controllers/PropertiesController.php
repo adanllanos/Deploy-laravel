@@ -149,7 +149,7 @@ class PropertiesController extends Controller
 
     public function propertiesById($id)
     {
-
+DB::statement("SET SQL_MODE=''");
         $properties = DB::table('properties')
             ->leftJoin('users', 'users.idUser', '=', 'properties.host_id')
             ->where('idProperty', '=', $id)
