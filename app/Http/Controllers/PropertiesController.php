@@ -121,7 +121,9 @@ class PropertiesController extends Controller
         JOIN (SELECT * FROM images GROUP BY property_id) as images ON properties.idProperty = images.property_id */
         DB::statement("SET SQL_MODE=''");
 
+
         $properties = Properties::select('idProperty', 'propertyName', 'propertyAmount', 'propertyAbility', 'images.imageLink', 'propertyDescription', 'propertyCity', 'propertyStatus')
+
             ->join(DB::raw('(SELECT * FROM images GROUP BY property_id) as images'), function ($join) {
                 $join->on('properties.idProperty', '=', 'images.property_id');
             })
@@ -144,11 +146,13 @@ class PropertiesController extends Controller
         return response()->json($properties);
     }
 
-    public function propertiesById(Request $request)
+
+    public function propertiesById($id)
     {
+
         $properties = DB::table('properties')
             ->leftJoin('users', 'users.idUser', '=', 'properties.host_id')
-            ->where('idProperty', '=', $request->idProperty)
+            ->where('idProperty', '=', $id)
             ->where(function ($query) {
                 $query->whereNull('properties.host_id')
                     ->orWhereNotNull('properties.host_id');
@@ -176,8 +180,18 @@ class PropertiesController extends Controller
             )
             ->get();
 
-        return $properties;
+        $images = DB::table('Images')
+            ->where('property_id', $id)
+            ->select('imageLink', 'imageDescription')
+            ->get();
+
+        return response()->json([
+            'properties' => $properties,
+            'Images' => $images,
+        ]);
+        //return $properties;
     }
+
 
     public function updateProperties(Request $request, $id)
     {
