@@ -148,8 +148,10 @@ class PropertiesController extends Controller
 
 
     public function propertiesById($id)
-    {
-DB::statement("SET SQL_MODE=''");
+{
+    try {
+        DB::statement("SET SQL_MODE=''");
+
         $properties = DB::table('properties')
             ->leftJoin('users', 'users.idUser', '=', 'properties.host_id')
             ->where('idProperty', '=', $id)
@@ -158,13 +160,11 @@ DB::statement("SET SQL_MODE=''");
                     ->orWhereNotNull('properties.host_id');
             })
             ->select(
-
                 'users.idUser',
                 'users.fullName',
                 'users.email',
                 'users.phoneNumber',
                 'users.birthDate',
-
                 'properties.idProperty',
                 'properties.propertyName',
                 'properties.propertyOperation',
@@ -189,8 +189,12 @@ DB::statement("SET SQL_MODE=''");
             'properties' => $properties,
             'Images' => $images,
         ]);
-        //return $properties;
+    } catch (\Exception $e) {
+        // Manejar el error y devolver una respuesta de error
+        return response()->json(['error' => $e->getMessage()], 500);
     }
+}
+
 
 
     public function updateProperties(Request $request, $id)
