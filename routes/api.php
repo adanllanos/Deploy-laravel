@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\EmailVerificationController;
+use App\Http\Controllers\FavoritesController;
 use App\Http\Controllers\FilterController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -55,6 +56,10 @@ Route::group(['middleware' => 'api'], function ($router) {
 
     Route::get('/getPropertiesWithCity', [FilterController::class, 'getAllPropertiesWithCity']);
     Route::get('/getUserPosts/{user}', [PropertiesController::class, 'getUserPosts']);
+
+    Route::post('/favorites', [FavoritesController::class, 'createdFavorites']);
+    Route::get('/favorites/favoritesByUser/{user_id}', [FavoritesController::class, 'favoritesOfUser']);
+    Route::delete('/favorites/{idFavorites}', [FavoritesController::class, 'destroy']);
 });
 
 Route::get('/login', function () {
