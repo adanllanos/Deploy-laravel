@@ -54,7 +54,7 @@ class FilterController extends Controller
                 $join->on('properties.idProperty', '=', 'images.property_id');
             })
             ->where('propertycity', 'LIKE', '%' . $city . '%')
-            ->where('propertyStatus', 'disponible')
+            ->where('propertyStatus', 'Publicado')
             ->where('propertyAbility', $hosts)
             //->whereBetween('fecha', ['2022-01-01', '2022-01-31'])
             ->get();
