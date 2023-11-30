@@ -149,7 +149,7 @@ class PropertiesController extends Controller
             ->join(DB::raw('(SELECT * FROM images GROUP BY property_id) as images'), function ($join) {
                 $join->on('properties.idProperty', '=', 'images.property_id');
             })
-            /* ->leftJoin('status_properties', 'status_properties.property_id', '=', 'properties.idProperty')
+            ->leftJoin('status_properties', 'status_properties.property_id', '=', 'properties.idProperty')
             ->where(function ($query) use ($currentDate) {
                 $query->whereNull('status_properties.startDate')
                     ->orWhere('status_properties.startDate', '>', $currentDate);
@@ -161,7 +161,7 @@ class PropertiesController extends Controller
             ->orWhere(function ($query) use ($currentDate) {
                 $query->where('status_properties.status', '!=', 'Pausado')
                     ->orWhereNull('status_properties.status');
-            }) */
+            })
             ->get();
 
         return response()->json($properties);
