@@ -10,6 +10,9 @@ use App\Http\Controllers\PropertiesController;
 use App\Http\Controllers\HolidaysController;
 use App\Http\Controllers\ImagesController;
 use App\Http\Controllers\RatingsController;
+use App\Http\Controllers\RequestsController;
+use App\Http\Controllers\StatusPropertyController;
+use App\Http\Controllers\ReservationsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -50,7 +53,7 @@ Route::group(['middleware' => 'api'], function ($router) {
     Route::delete('/images/deleteimages/{idImages}', [ImagesController::class, 'deleteImages']);
 
     Route::post('/ratings', [RatingsController::class, 'createdRatings']);
-    Route::get('/ratings/{idRatings}', [RatingsController::class, 'ratingsById']);
+    Route::get('/ratings/{idProperty}', [RatingsController::class, 'ratingsByIdProperty']);
     Route::post('/ratings/updateratings/{idRatings}', [RatingsController::class, 'updateRatings']);
     Route::delete('/ratings/deleteratings/{idRatings}', [RatingsController::class, 'deleteRatings']);
 
@@ -60,6 +63,19 @@ Route::group(['middleware' => 'api'], function ($router) {
     Route::post('/favorites', [FavoritesController::class, 'createdFavorites']);
     Route::get('/favorites/favoritesByUser/{user_id}', [FavoritesController::class, 'favoritesOfUser']);
     Route::delete('/favorites/{idFavorites}', [FavoritesController::class, 'destroy']);
+
+    Route::post('/requests', [RequestsController::class, 'createdRequests']);
+    Route::post('/requests/{idRequests}', [RequestsController::class, 'updateRequests']);
+    Route::get('/requests/{idRequests}', [RequestsController::class, 'requestsById']);
+    Route::get('/requests', [RequestsController::class, 'getAllRequests']);
+    Route::delete('/delete/requests/{idRequests}', [RequestsController::class, 'deleteRequests']);
+
+    Route::post('/StatusPause', [StatusPropertyController::class, 'createStatusPause']);
+    Route::delete('/deleteStatusProperties/{idProperty}', [StatusPropertyController::class, 'DeleteStatusProperty']);
+    Route::post('/reservations', [ReservationsController::class, 'createdReservation']);
+    Route::post('/reservations/{idReservations}', [ReservationsController::class, 'updateReservation']);
+    Route::get('/reservations/{idReservations}', [ReservationsController::class, 'reservationById']);
+    Route::get('/reservations', [ReservationsController::class, 'getAllReservations']);
 });
 
 Route::get('/login', function () {
