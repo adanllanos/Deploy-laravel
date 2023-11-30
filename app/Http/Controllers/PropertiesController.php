@@ -139,16 +139,29 @@ class PropertiesController extends Controller
         obtener datos del alojamiento y la primera imagen registrada del alojamiento
         SELECT idProperty, propertyName, propertyAmount,propertyAbility, images.imageLink, images.property_id
         FROM properties
-        JOIN (SELECT * FROM images GROUP BY property_id) as images ON properties.idProperty = images.property_id */
+        JOIN (SELECT * FROM images GROUP BY property_id) as images ON properties.idProperty = images.property_id 
+        */
         DB::statement("SET SQL_MODE=''");
+        //$currentDate = now()->format('Y-m-d');
+        $currentDate = "2023-05-08";
 
-
-        $properties = Properties::select('idProperty', 'propertyName', 'propertyAmount', 'propertyAbility', 'images.imageLink', 'propertyDescription', 'propertyCity', 'propertyStatus')
-
+        $properties = Properties::select('idProperty', 'propertyName', 'propertyAmount', 'propertyAbility', 'images.imageLink', 'propertydescription', 'status_properties.status')
             ->join(DB::raw('(SELECT * FROM images GROUP BY property_id) as images'), function ($join) {
                 $join->on('properties.idProperty', '=', 'images.property_id');
             })
-            ->where('propertyStatus', 'Publicado')
+            ->leftJoin('status_properties', 'status_properties.property_id', '=', 'properties.idProperty')
+            ->where(function ($query) use ($currentDate) {
+                $query->whereNull('status_properties.startDate')
+                    ->orWhere('status_properties.startDate', '>', $currentDate);
+            })
+            ->orWhere(function ($query) use ($currentDate) {
+                $query->whereNull('status_properties.endDate')
+                    ->orWhere('status_properties.endDate', '<', $currentDate);
+            })
+            ->orWhere(function ($query) use ($currentDate) {
+                $query->where('status_properties.status', '!=', 'Pausado')
+                    ->orWhereNull('status_properties.status');
+            })
             ->get();
 
         return response()->json($properties);
@@ -171,82 +184,80 @@ class PropertiesController extends Controller
 
     public function propertiesById($id)
     {
-        try {
-            DB::statement("SET SQL_MODE=''");
 
-            $properties = DB::table('properties')
-                ->leftJoin('users', 'users.idUser', '=', 'properties.host_id')
-                ->where('idProperty', '=', $id)
-                ->where(function ($query) {
-                    $query->whereNull('properties.host_id')
-                        ->orWhereNotNull('properties.host_id');
-                })
-                ->select(
-                    'users.idUser',
-                    'users.fullName',
-                    'users.email',
-                    'users.phoneNumber',
-                    'users.birthDate',
-                    'properties.idProperty',
-                    'properties.propertyName',
-                    'properties.propertyOperation',
-                    'properties.propertyType',
-                    'properties.propertyAddress',
-                    'properties.propertyDescription',
-                    'properties.propertyServices',
-                    'properties.propertyStatus',
-                    'properties.propertyAmount',
-                    'properties.propertyAbility',
-                    'properties.propertyCity',
-                    'propertyCroquis',
-                    'propertyRooms',
-                    'propertyBathrooms',
-                    'propertyBeds',
-                    'propertyRules',
-                    'propertySecurity',
-                    'properties.host_id',
-                )
-                ->get();
+        $properties = DB::table('properties')
+            ->leftJoin('users', 'users.idUser', '=', 'properties.host_id')
+            ->where('idProperty', '=', $id)
+            ->where(function ($query) {
+                $query->whereNull('properties.host_id')
+                    ->orWhereNotNull('properties.host_id');
+            })
+            ->select(
 
-            $services = DB::table('properties')
-                ->leftJoin('users', 'users.idUser', '=', 'properties.host_id')
-                ->where('idProperty', '=', $id)->select('propertyServices')->get();
+                'users.idUser',
+                'users.fullName',
+                'users.email',
+                'users.phoneNumber',
+                'users.birthDate',
+
+                'properties.idProperty',
+                'properties.propertyName',
+                'properties.propertyOperation',
+                'properties.propertyType',
+                'properties.propertyAddress',
+                'properties.propertyDescription',
+                'properties.propertyServices',
+                'properties.propertyStatus',
+                'properties.propertyAmount',
+                'properties.propertyAbility',
+                'properties.propertyCity',
+                'propertyCroquis',
+                'propertyRooms',
+                'propertyBathrooms',
+                'propertyBeds',
+                'propertyRules',
+                'propertySecurity',
+                'properties.host_id',
+            )
+            ->get();
+
+        $services = DB::table('properties')
+            ->leftJoin('users', 'users.idUser', '=', 'properties.host_id')
+            ->where('idProperty', '=', $id)->select('propertyServices')->get();
 
 
-            $servicesArray = [];
+        $servicesArray = [];
 
-            foreach ($services as $service) {
+        foreach ($services as $service) {
             $propertyServices = $service->propertyServices;
 
             $servicesList = explode(', ', $propertyServices);
 
             foreach ($servicesList as $singleService) {
                 $servicesArray[] = ['service' => $singleService];
-                }
             }
-
-            $images = DB::table('images')
-                ->where('property_id', $id)
-                ->select('imageLink', 'imageDescription')
-                ->get();
-
-            return response()->json([
-                'properties' => $properties,
-                'Images' => $images,
-                'sevices' => $servicesArray
-            ]);
-        } catch (\Exception $e) {
-            // Manejar el error y devolver una respuesta de error
-            return response()->json(['error' => $e->getMessage()], 500);
         }
-    }
 
+        $images = DB::table('images')
+            ->where('property_id', $id)
+            ->select('imageLink', 'imageDescription')
+            ->get();
+
+        return response()->json([
+            'properties' => $properties,
+            'Images' => $images,
+            'sevices' => $servicesArray
+        ]);
+        //return $properties;
+    }
 
 
     public function updateProperties(Request $request, $id)
     {
         $properties = properties::find($id);
-
+        if (!$properties) {
+            return response()->json(['error' => 'Property not found'], 404);
+        }
         $properties->propertyName = $request->propertyName;
         $properties->propertyOperation = $request->propertyOperation;
         $properties->propertyType = $request->propertyType;
@@ -257,6 +268,13 @@ class PropertiesController extends Controller
         $properties->propertyAmount = $request->propertyAmount;
         $properties->propertyAbility = $request->propertyAbility;
         $properties->propertyCity = $request->propertyCity;
+        $properties->propertyCroquis = $request->propertyCroquis;
+        $properties->propertyRooms = $request->propertyRooms;
+        $properties->propertyBathrooms = $request->propertyBathrooms;
+        $properties->propertyBeds = $request->propertyBeds;
+        $properties->propertyRules = $request->propertyRules;
+        $properties->propertySecurity = $request->propertySecurity;
+
 
         $properties->save();
         return $properties;
