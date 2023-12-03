@@ -142,8 +142,8 @@ class PropertiesController extends Controller
         JOIN (SELECT * FROM images GROUP BY property_id) as images ON properties.idProperty = images.property_id 
         */
         DB::statement("SET SQL_MODE=''");
-        $currentDate = "2021-05-08";
-        //$currentDate = $request->input('currentDate');
+        //$currentDate = "2021-05-08";
+        $currentDate = $request->input('currentDate');
 
         $properties = Properties::select('idProperty', 'propertyName', 'propertyAmount', 'propertyAbility', 'images.imageLink', 'propertydescription', 'status_properties.status', 'propertyCity')
             ->join(DB::raw('(SELECT * FROM images GROUP BY property_id) as images'), function ($join) {
