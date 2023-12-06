@@ -245,7 +245,7 @@ class PropertiesController extends Controller
 
         $holidaysProperty = DB::table('holidays')
             ->where('property_id', $id)
-            ->select('startDate', 'endDate', 'amount')
+            ->select('idHolidays', 'startDate', 'endDate', 'amount')
             ->get();
 
         $statusProperty = DB::table('status_properties')
