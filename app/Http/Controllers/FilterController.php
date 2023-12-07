@@ -45,16 +45,16 @@ class FilterController extends Controller
             $query->where('propertyAbility', $hosts);
         }
 
-if ($startDate !== null && $endDate !== null) {
-    $query->where(function ($subquery) use ($startDate, $endDate) {
-        $subquery->whereNotIn('properties.idProperty', function ($reservationQuery) use ($startDate, $endDate) {
-            $reservationQuery->select('idProperty')
-                ->from('reservations')
-                ->where('startDate', '<=', $endDate)  // La reserva comienza antes o durante el intervalo
-                ->where('endDate', '>=', $startDate);  // La reserva termina después o durante el intervalo
-        });
-    });
-}
+        if ($startDate !== null && $endDate !== null) {
+            $query->where(function ($subquery) use ($startDate, $endDate) {
+                $subquery->whereNotIn('properties.idProperty', function ($reservationQuery) use ($startDate, $endDate) {
+                    $reservationQuery->select('idProperty')
+                        ->from('reservations')
+                        ->where('startDate', '<=', $endDate)  // La reserva comienza antes o durante el intervalo
+                        ->where('endDate', '>=', $startDate);  // La reserva termina después o durante el intervalo
+                });
+            });
+        }
         $properties = $query->get();
 
         return response()->json($properties);
