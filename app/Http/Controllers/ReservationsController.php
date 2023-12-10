@@ -199,7 +199,7 @@ class ReservationsController extends Controller
     public function getReservationDates($idUser, $idProperty)
     {
         try {
-            $reservations = Reservations::select('startDate', 'endDate', 'idProperty', 'idUser')
+            $reservations = Reservations::select('idReservations', 'startDate', 'endDate', 'idProperty', 'idUser')
                 ->where('idProperty', $idProperty)
                 ->where('idUSer', $idUser)
                 ->get();
