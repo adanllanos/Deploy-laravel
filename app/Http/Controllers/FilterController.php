@@ -22,6 +22,7 @@ class FilterController extends Controller
         $startDate = $request->input('startDate');
         $endDate = $request->input('endDate');
 
+        $currentDate = "2021-05-08";
 
         $query = Properties::select(
             'idProperty',
@@ -54,6 +55,20 @@ class FilterController extends Controller
                         ->where('endDate', '>=', $startDate);
                 });
             });
+        } else {
+            $query->leftJoin('status_properties', 'status_properties.property_id', '=', 'properties.idProperty')
+                ->where(function ($query) use ($currentDate) {
+                    $query->whereNull('status_properties.startDate')
+                        ->orWhere('status_properties.startDate', '>', $currentDate);
+                })
+                ->orWhere(function ($query) use ($currentDate) {
+                    $query->whereNull('status_properties.endDate')
+                        ->orWhere('status_properties.endDate', '<', $currentDate);
+                })
+                ->orWhere(function ($query) use ($currentDate) {
+                    $query->where('status_properties.status', '!=', 'Pausado')
+                        ->orWhereNull('status_properties.status');
+                });
         }
         $properties = $query->get();
 
