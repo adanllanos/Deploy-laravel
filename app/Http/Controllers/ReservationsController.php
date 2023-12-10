@@ -233,6 +233,7 @@ class ReservationsController extends Controller
                     ->orWhereNull('reservations.idUser');
             })
             ->select(
+                'reservations.idReservations',
                 'reservations.startDate',
                 'reservations.totalAmount',
                 'reservations.endDate',
