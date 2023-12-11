@@ -30,21 +30,11 @@ class StatusPropertyController extends Controller
         $statusProperty->property_id = $request->property_id;
 
         $statusProperty->save();
-        $newReservation = new Reservations([
-            'startDate' => $request->startDate,
-            'endDate' => $request->endDate,
-            'totalAmount' => 0,
-        ]);
 
-        $newReservation->idProperty = $request->property_id;
-        $newReservation->idUser = 1;
-
-        $newReservation->save();
 
         return response()->json([
             'message' => 'Status created successfully',
             'statusProperty' => $statusProperty,
-            'reservation' => $newReservation
             //'properties' => $property,
         ], 201);
     }
