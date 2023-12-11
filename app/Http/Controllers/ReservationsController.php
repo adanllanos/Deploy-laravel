@@ -228,10 +228,6 @@ class ReservationsController extends Controller
                 $query->whereNull('reservations.idUser')
                     ->orWhereNotNull('reservations.idUser');
             })
-            ->where(function ($query) use ($currentDate) {
-                $query->where('reservations.endDate', '>=', $currentDate)
-                    ->orWhereNull('reservations.idUser');
-            })
             ->select(
                 'reservations.idReservations',
                 'reservations.startDate',
