@@ -240,7 +240,7 @@ class PropertiesController extends Controller
 
         $images = DB::table('images')
             ->where('property_id', $id)
-            ->select('imageLink', 'imageDescription')
+            ->select('idImages', 'imageLink', 'imageDescription')
             ->get();
 
         $holidaysProperty = DB::table('holidays')
