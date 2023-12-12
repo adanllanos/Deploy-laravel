@@ -101,6 +101,7 @@ class QualificationsUserController extends Controller
             'propertyCity',
             'propertyStatus',
             'host_id',
+            'propertyAmount',
             'status_properties.status',
             'status_properties.startDate',
             'status_properties.endDate',
