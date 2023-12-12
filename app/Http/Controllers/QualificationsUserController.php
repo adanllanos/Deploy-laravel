@@ -112,15 +112,12 @@ class QualificationsUserController extends Controller
 
         $filteredProperties = $properties->reject(function ($property) {
             return $property->status === 'Pausado';
-        });
-
-        $filteredPropertiesArray = $filteredProperties->toArray();
-
+        })->values();
         return response()->json([
             'host' => $host,
             'host qualification' => $qualification,
             'user qualification' => $qualification_user,
-            'user posts' => $filteredPropertiesArray,
+            'user posts' => $filteredProperties,
             'comments from users to the host' => $comments_user,
             'comments from hosts to the user' => $comments_host
         ], 201);
