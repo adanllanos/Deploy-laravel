@@ -133,7 +133,7 @@ class PropertiesController extends Controller
         }
     }
 
-    public function getAllProperties(Request $request)
+     public function getAllProperties(Request $request)
     {
         /* 
         obtener datos del alojamiento y la primera imagen registrada del alojamiento
@@ -173,7 +173,6 @@ class PropertiesController extends Controller
 
         return response()->json($properties);
     }
-
     public function getUserPosts($id)
     {
         DB::statement("SET SQL_MODE=''");
