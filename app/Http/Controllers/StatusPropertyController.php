@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Reservations;
 use App\Models\StatusProperty;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -35,6 +36,7 @@ class StatusPropertyController extends Controller
         return response()->json([
             'message' => 'Status created successfully',
             'statusProperty' => $statusProperty,
+            'reservation' => $newReservation
             //'properties' => $property,
         ], 201);
     }
