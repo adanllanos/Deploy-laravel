@@ -67,12 +67,15 @@ class ReservationsController extends Controller
         $notificationUser->save();
 
         $user = User::find($request->idUser);
+        $fullName = $user->fullName;
+        $idUser = $user->idUser;
+        $result = $fullName . ', ' . $idUser;
 
         $notificationHost = new NotificationsHosts([
             'startDate' => $newReservation->startDate,
             'endDate' => $newReservation->endDate,
             'nameProperty' => $property->propertyName,
-            'nameUser' => $user->fullName,
+            'nameUser' => $result,
         ]);
 
         $notificationHost->idProperty = $request->idProperty;
@@ -199,7 +202,7 @@ class ReservationsController extends Controller
     public function getReservationDates($idUser, $idProperty)
     {
         try {
-            $reservations = Reservations::select('startDate', 'endDate', 'idProperty', 'idUser')
+            $reservations = Reservations::select('idReservations', 'startDate', 'endDate', 'idProperty', 'idUser')
                 ->where('idProperty', $idProperty)
                 ->where('idUSer', $idUser)
                 ->get();
@@ -228,11 +231,8 @@ class ReservationsController extends Controller
                 $query->whereNull('reservations.idUser')
                     ->orWhereNotNull('reservations.idUser');
             })
-            ->where(function ($query) use ($currentDate) {
-                $query->where('reservations.endDate', '>=', $currentDate)
-                    ->orWhereNull('reservations.idUser');
-            })
             ->select(
+                'reservations.idReservations',
                 'reservations.startDate',
                 'reservations.totalAmount',
                 'reservations.endDate',
