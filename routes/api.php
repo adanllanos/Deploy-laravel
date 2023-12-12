@@ -95,7 +95,7 @@ Route::group(['middleware' => 'api'], function ($router) {
     Route::post('/rateToUser', [QualificationsUserController::class, 'rateToUser']);
     Route::get('/perfilUser/{idUser}', [QualificationsUserController::class, 'getPerfilUser']);
 
-    Route::post('/updateUserPicture/{idUser}', [QualificationController::class, 'updateUserPicture']);
+    Route::post('/updateUserPicture', [QualificationController::class, 'updateUserPicture']);
 });
 
 
