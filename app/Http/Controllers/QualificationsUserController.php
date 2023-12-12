@@ -100,6 +100,7 @@ class QualificationsUserController extends Controller
             'images.imageLink',
             'propertyCity',
             'propertyStatus',
+            'host_id',
             'status_properties.status',
             'status_properties.startDate',
             'status_properties.endDate',
@@ -108,6 +109,7 @@ class QualificationsUserController extends Controller
         })
             ->leftJoin('status_properties', 'status_properties.property_id', '=', 'properties.idProperty')
             ->where('propertyStatus', 'Publicado')
+            ->where('host_id', $idUser)
             ->get();
 
         $filteredProperties = $properties->reject(function ($property) {
