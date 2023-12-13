@@ -194,6 +194,7 @@ class PropertiesController extends Controller
 
         $properties = DB::table('properties')
             ->leftJoin('users', 'users.idUser', '=', 'properties.host_id')
+            ->leftJoin('user_pictures', 'users.idUser', '=', 'user_pictures.idUser')
             ->where('idProperty', '=', $id)
             ->where(function ($query) {
                 $query->whereNull('properties.host_id')
@@ -206,6 +207,7 @@ class PropertiesController extends Controller
                 'users.email',
                 'users.phoneNumber',
                 'users.birthDate',
+                'user_pictures.user_picture',
 
                 'properties.idProperty',
                 'properties.propertyName',
