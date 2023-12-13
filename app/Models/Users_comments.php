@@ -14,6 +14,7 @@ class Users_comments extends Model
         'idUserComments',
         'comment',
         'commentDate',
+        'type',
         'sender_user_id',
         'receiver_user_id',
     ];

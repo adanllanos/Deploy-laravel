@@ -17,6 +17,7 @@ class CreateUsersCommentsTable extends Migration
             $table->id('idUserComments');
             $table->string('comment');
             $table->date('commentDate');
+            $table->string('type');
 
             $table->unsignedBigInteger('sender_user_id');
             $table->foreign('sender_user_id')->references('idUser')->on('users')->onDelete('cascade');

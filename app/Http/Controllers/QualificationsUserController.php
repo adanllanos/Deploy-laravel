@@ -6,6 +6,7 @@ use App\Models\Properties;
 use App\Models\Qualification;
 use App\Models\Qualifications_user;
 use App\Models\User;
+use App\Models\User_picture;
 use App\Models\Users_comments;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Validator;
@@ -55,7 +56,8 @@ class QualificationsUserController extends Controller
         $currentDate = Carbon::now()->format('y-m-d');
         $comment = new Users_comments([
             'comment' => $request->commentToUser,
-            'commentDate' => $currentDate
+            'commentDate' => $currentDate,
+            'type' => 'user',
         ]);
         $comment->sender_user_id = $request->idHost;
         $comment->receiver_user_id = $request->idUser;
@@ -83,18 +85,26 @@ class QualificationsUserController extends Controller
         $qualification_user = Qualifications_user::select('idQualificationUser', 'ratingCleaning', 'ratingPunctuality', 'ratingComunication', 'qualificationAmount', 'idUser')
             ->where('idUser', $host->idUser)->first();
 
-        $comments_user = Users_comments::where('receiver_user_id', $idUser)->get();
+        $comments_user = Users_comments::where('receiver_user_id', $idUser)
+            ->where('type', '=', 'user')
+            ->get();
 
         foreach ($comments_user as $comment) {
             $senderUser = User::find($comment->sender_user_id);
+            $sender_picture = User_picture::where('idUser', $senderUser->idUser)->first();
             $comment->senderUserName = $senderUser ? $senderUser->fullName : null;
+            $comment->sender_picture =  $sender_picture ? $sender_picture->user_picture : null;
         }
 
-        $comments_host = Users_comments::where('sender_user_id', $idUser)->get();
+        $comments_host = Users_comments::where('receiver_user_id', $idUser)
+            ->where('type', '=', 'host')
+            ->get();
 
         foreach ($comments_host as $comment) {
             $senderUser = User::find($comment->sender_user_id);
+            $sender_picture = User_picture::where('idUser', $senderUser->idUser)->first();
             $comment->senderUserName = $senderUser ? $senderUser->fullName : null;
+            $comment->sender_picture =  $sender_picture ? $sender_picture->user_picture : null;
         }
 
         $properties = Properties::select(

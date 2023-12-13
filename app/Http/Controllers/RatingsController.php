@@ -81,7 +81,8 @@ class RatingsController extends Controller
             $currentDate = Carbon::now()->format('y-m-d');
             $comment = new Users_comments([
                 'comment' => $request->commentToHost,
-                'commentDate' => $currentDate
+                'commentDate' => $currentDate,
+                'type' => 'host',
             ]);
             $comment->sender_user_id = $request->idUser;
             $comment->receiver_user_id = $host->idUser;
