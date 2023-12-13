@@ -315,4 +315,62 @@ class PropertiesController extends Controller
             return response()->json(['message' => 'there is no property'], 404);
         }
     }
+
+    public function filterProperties(Request $request)
+    {
+        $query = Properties::select(
+            'properties.*',
+            'images.imageLink',
+        )
+            ->join(DB::raw('(SELECT property_id, MAX(imageLink) as imageLink FROM images GROUP BY property_id) as images'), function ($join) {
+                $join->on('properties.idProperty', '=', 'images.property_id');
+            })
+            ->leftJoin('status_properties', 'status_properties.property_id', '=', 'properties.idProperty')
+            ->leftJoin('reservations', 'reservations.idProperty', '=', 'properties.idProperty')
+            ->when(
+                $request->filled('propertyAmountMin') && $request->filled('propertyAmountMax') && is_numeric($request->input('propertyAmountMin')) && is_numeric($request->input('propertyAmountMax')),
+                function ($query) use ($request) {
+                    $query->whereBetween('propertyAmount', [$request->input('propertyAmountMin'), $request->input('propertyAmountMax')]);
+                }
+            )
+            ->when(
+                $request->filled('propertyCity'),
+                function ($query) use ($request) {
+                    $query->where('propertyCity', 'LIKE', '%' . $request->input('propertyCity') . '%');
+                }
+            )
+            ->when(
+                $request->filled('propertyAbility') && is_numeric($request->input('propertyAbility')),
+                function ($query) use ($request) {
+                    $query->where('propertyAbility', '=', $request->input('propertyAbility'));
+                }
+            )
+            ->when(
+                $request->filled('startDate') && $request->filled('endDate'),
+                function ($query) use ($request) {
+                    $query->where(function ($query) use ($request) {
+                        $query->whereRaw('NOT EXISTS (
+                            SELECT 1 FROM status_properties as sp
+                            WHERE sp.property_id = properties.idProperty
+                            AND ((sp.startDate >= ? AND sp.startDate <= ?) OR
+                                (sp.endDate >= ? AND sp.endDate <= ?) OR
+                                (sp.startDate <= ? AND sp.endDate >= ?))
+                        )', [$request->input('startDate'), $request->input('endDate'), $request->input('startDate'), $request->input('endDate'), $request->input('startDate'), $request->input('endDate')])
+                            ->whereRaw('NOT EXISTS (
+                                SELECT 1 FROM reservations as r
+                                WHERE r.idProperty = properties.idProperty
+                                AND ((r.startDate >= ? AND r.startDate <= ?) OR
+                                    (r.endDate >= ? AND r.endDate <= ?) OR
+                                    (r.startDate <= ? AND r.endDate >= ?))
+                            )', [$request->input('startDate'), $request->input('endDate'), $request->input('startDate'), $request->input('endDate'), $request->input('startDate'), $request->input('endDate')]);
+                    });
+                }
+            )
+            ->where('propertyStatus', '=', 'Publicado')
+            ->distinct(); 
+
+        $properties = $query->get();
+
+        return response()->json($properties);
+    }
 }

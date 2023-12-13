@@ -45,6 +45,7 @@ Route::group(['middleware' => 'api'], function ($router) {
     Route::post('/properties/updateProperties/{idProperty}', [PropertiesController::class, 'updateProperties']);
     Route::delete('/properties/deleteProperties/{idProperty}', [PropertiesController::class, 'deleteProperties']);
     Route::get('/getAllProperties', [PropertiesController::class, 'getAllProperties']);
+    Route::get('/filterProperties', [PropertiesController::class, 'filterProperties']);
     //publicaciones de un usuario manejarlo con api
 
     Route::post('/holidays', [HolidaysController::class, 'createdHolidays']);
@@ -71,6 +72,8 @@ Route::group(['middleware' => 'api'], function ($router) {
     Route::delete('/favorites/{idFavorites}', [FavoritesController::class, 'destroy']);
 
     Route::post('/StatusPause', [StatusPropertyController::class, 'createStatusPause']);
+    Route::get('/statusPropertiesByIdProperties/{property_id}', [StatusPropertyController::class, 'statusPropertiesByIdProperties']);
+
     Route::delete('/deleteStatusProperties/{idProperty}', [StatusPropertyController::class, 'DeleteStatusProperty']);
     Route::post('/reservations', [ReservationsController::class, 'createdReservation']);
     Route::post('/reservations/{idReservations}', [ReservationsController::class, 'updateReservation']);

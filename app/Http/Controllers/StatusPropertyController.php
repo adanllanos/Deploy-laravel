@@ -6,6 +6,7 @@ use App\Models\Reservations;
 use App\Models\StatusProperty;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
 
 class StatusPropertyController extends Controller
 {
@@ -48,5 +49,27 @@ class StatusPropertyController extends Controller
         } else {
             return response()->json(['message' => 'no removed'], 404);
         }
+    }
+
+    public function statusPropertiesByIdProperties($property_id)
+    {
+
+        $statusProperties = DB::table('status_properties')
+            ->leftJoin('properties', 'properties.idProperty', '=', 'status_properties.property_id')
+            ->where('properties.idProperty', '=', $property_id)
+            ->where(function ($query){
+                $query->whereNull('status_properties.property_id')
+                    ->orWhereNotNull('status_properties.property_id');
+            })
+            ->select(
+                'status_properties.idStatus',
+                'status_properties.startDate',
+                'status_properties.endDate',
+                'status_properties.property_id',
+
+            )
+            ->get();
+
+        return $statusProperties;
     }
 }

@@ -57,7 +57,7 @@ class UsersCommentsController extends Controller
      */
     public function edit(Users_comments $users_comments)
     {
-        //
+        // 
     }
 
     /**
