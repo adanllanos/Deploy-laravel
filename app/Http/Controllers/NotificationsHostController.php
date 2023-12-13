@@ -63,6 +63,11 @@ class NotificationsHostController extends Controller
 
             $notification->nameUser = $nameUserParts[0];
             $notification->idUser = intval($nameUserParts[1]);
+            $host = User::select('user_pictures.user_picture')
+                ->leftJoin('user_pictures', 'users.idUser', '=', 'user_pictures.idUser')
+                ->where('users.idUser', intval($nameUserParts[1]))
+                ->first();
+            $notification->user_picture = $host->user_picture;
         }
         return $user;
     }

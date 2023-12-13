@@ -71,7 +71,11 @@ class QualificationsUserController extends Controller
     {
         DB::statement("SET SQL_MODE=''");
 
-        $host = User::where('idUser', $idUser)->first();
+        $host = User::select('users.*', 'user_pictures.user_picture')
+            ->leftJoin('user_pictures', 'users.idUser', '=', 'user_pictures.idUser')
+            ->where('users.idUser', $idUser)
+            ->first();
+
 
         $qualification = Qualification::select('idQualification', 'ratingCleaning', 'ratingPunctuality', 'ratingComunication', 'qualificationAmount', 'idUser')
             ->where('idUser', $host->idUser)->first();
