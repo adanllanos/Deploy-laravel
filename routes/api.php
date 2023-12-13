@@ -17,6 +17,7 @@ use App\Http\Controllers\NotificationsHostController;
 use App\Http\Controllers\NotificationsUserController;
 use App\Http\Controllers\QualificationController;
 use App\Http\Controllers\QualificationsUserController;
+use App\Http\Controllers\UserPictureController;
 
 /*
 |--------------------------------------------------------------------------
@@ -95,7 +96,7 @@ Route::group(['middleware' => 'api'], function ($router) {
     Route::post('/rateToUser', [QualificationsUserController::class, 'rateToUser']);
     Route::get('/perfilUser/{idUser}', [QualificationsUserController::class, 'getPerfilUser']);
 
-    Route::post('/updateUserPicture/{idUser}', [QualificationController::class, 'updateUserPicture']);
+    Route::post('/updateUserPicture/{idUser}', [UserPictureController::class, 'updateUserPicture']);
 });
 
 

@@ -100,6 +100,8 @@ class QualificationsUserController extends Controller
             'images.imageLink',
             'propertyCity',
             'propertyStatus',
+            'host_id',
+            'propertyAmount',
             'status_properties.status',
             'status_properties.startDate',
             'status_properties.endDate',
@@ -108,19 +110,17 @@ class QualificationsUserController extends Controller
         })
             ->leftJoin('status_properties', 'status_properties.property_id', '=', 'properties.idProperty')
             ->where('propertyStatus', 'Publicado')
+            ->where('host_id', $idUser)
             ->get();
 
         $filteredProperties = $properties->reject(function ($property) {
             return $property->status === 'Pausado';
-        });
-
-        $filteredPropertiesArray = $filteredProperties->toArray();
-
+        })->values();
         return response()->json([
             'host' => $host,
             'host qualification' => $qualification,
             'user qualification' => $qualification_user,
-            'user posts' => $filteredPropertiesArray,
+            'user posts' => $filteredProperties,
             'comments from users to the host' => $comments_user,
             'comments from hosts to the user' => $comments_host
         ], 201);

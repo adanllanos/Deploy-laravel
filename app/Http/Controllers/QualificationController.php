@@ -54,10 +54,11 @@ class QualificationController extends Controller
         $user = User::find($request->idUser);
 
         if (!$user) {
-            return response()->json(['error' => 'Property not found'], 404);
+            return response()->json(['error' => 'User not found'], 404);
         }
-        $user->user_picture = $request->user_picture;
-        $user->save();
-        return response()->json('user photo successfully updated');
+
+        $user->update(['user_picture' => $request->user_picture]);
+
+        return response()->json('User photo successfully updated');
     }
 }
