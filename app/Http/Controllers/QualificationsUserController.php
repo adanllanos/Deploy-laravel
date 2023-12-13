@@ -139,4 +139,14 @@ class QualificationsUserController extends Controller
             'comments from hosts to the user' => $comments_host
         ], 201);
     }
+    public function getUserByID($idUser)
+    {
+        $host = User::select('users.fullName', 'user_pictures.user_picture')
+            ->leftJoin('user_pictures', 'users.idUser', '=', 'user_pictures.idUser')
+            ->where('users.idUser', $idUser)
+            ->first();
+        return response()->json([
+            'user' => $host,
+        ], 201);
+    }
 }
