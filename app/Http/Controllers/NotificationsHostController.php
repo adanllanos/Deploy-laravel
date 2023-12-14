@@ -45,9 +45,9 @@ class NotificationsHostController extends Controller
     }
 
 
-    public function userByIdHost(Request $request)
+       public function userByIdHost($idUser)
     {
-        $user = DB::table('notifications_hosts')->where('host_id', '=', $request->idUser)
+        $user = DB::table('notifications_hosts')->where('host_id', '=', $idUser)
             ->select(
                 'notifications_hosts.idNotificationsHosts',
                 'notifications_hosts.startDate',
